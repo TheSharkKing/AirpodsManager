@@ -1,17 +1,21 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { setMode } from '../services/bluetooth';
 import { MODES } from '../utils/constants';
 
-const ModeSwitch: React.FC = () => {
-    const [currentMode, setCurrentMode] = useState(MODES.NOISE_CANCELLATION);
+interface ModeSwitchProps {
+    currentMode: typeof MODES[keyof typeof MODES];
+    onModeChange: (mode: typeof MODES[keyof typeof MODES]) => void;
+}
 
+const ModeSwitch: React.FC<ModeSwitchProps> = ({ currentMode, onModeChange }) => {
     const toggleMode = async () => {
         const newMode = currentMode === MODES.NOISE_CANCELLATION ? MODES.TRANSPARENCY : MODES.NOISE_CANCELLATION;
         try {
             await setMode(newMode);
-            setCurrentMode(newMode);
+            onModeChange(newMode);
         } catch (error) {
             console.error('Failed to switch mode:', error);
+            // Let the parent component handle the error through the connection state
         }
     };
 
